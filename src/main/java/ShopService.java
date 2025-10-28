@@ -19,7 +19,7 @@ public class ShopService {
             var productOpt = productRepo.getProductById(productId);
             if (productOpt.isEmpty()) {
                 System.out.println("model.Product mit der Id: " + productId + " konnte nicht bestellt werden!");
-                return null;
+                throw new NoSuchFieldError("Product with id: " + productId + " could not be ordered. Product not found.");
             }
             products.add(productOpt.get());
         }
