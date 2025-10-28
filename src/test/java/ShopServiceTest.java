@@ -147,7 +147,20 @@ class ShopServiceTest {
 
     @Test
     void getOldestOrderPerStatus_returnsMapWithCorrectValues_whenOrdersExists() {
-        shopService.addOrder(List.of("1"));
+        Order oldestOrder = shopService.addOrder(List.of("1"));
+        shopService.getProductRepo().addProduct(new Product("2", "Birne"));
+        shopService.addOrder(List.of("2"));
+
+        Map<OrderStatus, Order> oldestOrderPerStatus = shopService.getOldestOrderPerStatus();
+        assertEquals(OrderStatus.values().length, oldestOrderPerStatus.size());
+        for (OrderStatus orderStatus : OrderStatus.values()) {
+            if (orderStatus == OrderStatus.PROCESSING) {
+                assertEquals(OrderStatus.PROCESSING, oldestOrderPerStatus.get(orderStatus).orderStatus());
+                assertEquals(oldestOrder.id(), oldestOrderPerStatus.get(orderStatus).id());
+            } else {
+                assertNull(oldestOrderPerStatus.get(orderStatus));
+            }
+        }
 
     }
 
