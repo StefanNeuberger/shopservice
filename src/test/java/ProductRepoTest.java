@@ -1,17 +1,27 @@
 import model.Product;
+import org.junit.jupiter.api.BeforeEach;
 import repository.ProductRepo;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ProductRepoTest {
+
+    private ProductRepo repo;
+
+    @BeforeEach
+    void setUp() {
+        repo = new ProductRepo();
+        Product product1 = new Product("1", "Apfel");
+        repo.addProduct(product1);
+    }
 
     @org.junit.jupiter.api.Test
     void getProducts() {
         //GIVEN
-        ProductRepo repo = new ProductRepo();
 
         //WHEN
         List<Product> actual = repo.getProducts();
@@ -25,7 +35,6 @@ class ProductRepoTest {
     @org.junit.jupiter.api.Test
     void getProductById() {
         //GIVEN
-        ProductRepo repo = new ProductRepo();
 
         //WHEN
         Product actual = repo.getProductById("1").orElse(null);
@@ -38,7 +47,6 @@ class ProductRepoTest {
     @org.junit.jupiter.api.Test
     void addProduct() {
         //GIVEN
-        ProductRepo repo = new ProductRepo();
         Product newProduct = new Product("2", "Banane");
 
         //WHEN
@@ -53,7 +61,6 @@ class ProductRepoTest {
     @org.junit.jupiter.api.Test
     void removeProduct() {
         //GIVEN
-        ProductRepo repo = new ProductRepo();
 
         //WHEN
         repo.removeProduct("1");
