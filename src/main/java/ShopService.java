@@ -29,6 +29,18 @@ public class ShopService {
         return orderRepo.addOrder(newOrder);
     }
 
+    public List<Order> getOrders() {
+        return orderRepo.getOrders();
+    }
+
+    public Order updateOrder(String orderId, OrderStatus orderStatus) {
+        var updatedOpt = orderRepo.updateOrder(orderId, orderStatus);
+        if (updatedOpt.isEmpty()) {
+            throw new IllegalArgumentException("Order with id: " + orderId + " not found.");
+        }
+        return updatedOpt.get();
+    }
+
     public List<Order> getOrdersByOrderStatus(OrderStatus orderStatus) {
         return orderRepo.getOrders().stream().filter(o -> o.orderStatus().equals(orderStatus)).toList();
     }
