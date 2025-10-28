@@ -11,6 +11,7 @@ import repository.ProductRepo;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.*;
 
 @RequiredArgsConstructor
 public class ShopService {
@@ -50,5 +51,16 @@ public class ShopService {
 
     public List<Order> getOrdersByOrderStatus(OrderStatus orderStatus) {
         return orderRepo.getOrders().stream().filter(o -> o.orderStatus().equals(orderStatus)).toList();
+    }
+
+    public Map<OrderStatus, Order> getOldestOrderPerStatus() {
+        List<Order> allOrders = orderRepo.getOrders();
+        Map<OrderStatus, Order> oldestOrderPerStatus = new HashMap<>();
+        for (OrderStatus orderStatus : OrderStatus.values()) {
+            List<Order> ordersOfStatus = getOrdersByOrderStatus(orderStatus);
+            Order oldestOrder = ordersOfStatus.stream().sorted(Comparator.comparing(Order::orderedAt).reversed()).findFirst().orElse(null);
+            oldestOrderPerStatus.put(orderStatus, oldestOrder);
+        }
+        return oldestOrderPerStatus;
     }
 }

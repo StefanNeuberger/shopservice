@@ -7,6 +7,7 @@ import repository.*;
 import service.ShopService;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -132,6 +133,22 @@ class ShopServiceTest {
         assertEquals(order1.id(), completedOrders.get(0).id());
         assertEquals(1, processingOrders.size());
         assertEquals(order2.id(), processingOrders.get(0).id());
+    }
+
+    @Test
+    void getOldestOrderPerStatus_returnsMapWithNullValues_whenNoOrdersExists() {
+        Map<OrderStatus, Order> oldestOrderPerStatus = shopService.getOldestOrderPerStatus();
+        System.out.println("oldestOrderPerStatus!!!" + oldestOrderPerStatus);
+        assertEquals(OrderStatus.values().length, oldestOrderPerStatus.size());
+        for (OrderStatus orderStatus : OrderStatus.values()) {
+            assertNull(oldestOrderPerStatus.get(orderStatus));
+        }
+    }
+
+    @Test
+    void getOldestOrderPerStatus_returnsMapWithCorrectValues_whenOrdersExists() {
+        shopService.addOrder(List.of("1"));
+
     }
 
 }
