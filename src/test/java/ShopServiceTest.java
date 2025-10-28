@@ -18,7 +18,6 @@ class ShopServiceTest {
     }
 
     @Test
-
     void addOrderTest() {
         //GIVEN
         List<String> productsIds = List.of("1");
@@ -27,9 +26,10 @@ class ShopServiceTest {
         Order actual = shopService.addOrder(productsIds);
 
         //THEN
-        Order expected = new Order("-1", List.of(new Product("1", "Apfel")), OrderStatus.PROCESSING);
-        assertEquals(expected.products(), actual.products());
-        assertNotNull(expected.id());
+        assertEquals(List.of(new Product("1", "Apfel")), actual.products());
+        assertEquals(OrderStatus.PROCESSING, actual.orderStatus());
+        assertNotNull(actual.id());
+        assertNotNull(actual.orderedAt());
     }
 
     @Test
@@ -102,8 +102,8 @@ class ShopServiceTest {
 
         //WHEN & THEN
         assertThrows(
-            IllegalArgumentException.class,
-            () -> shopService.updateOrder(nonExistentId, OrderStatus.COMPLETED)
+                IllegalArgumentException.class,
+                () -> shopService.updateOrder(nonExistentId, OrderStatus.COMPLETED)
         );
     }
 
@@ -120,10 +120,10 @@ class ShopServiceTest {
         //THEN
         List<Order> completedOrders = shopService.getOrdersByOrderStatus(OrderStatus.COMPLETED);
         List<Order> processingOrders = shopService.getOrdersByOrderStatus(OrderStatus.PROCESSING);
-        
+
         assertEquals(1, completedOrders.size());
         assertEquals(order1.id(), completedOrders.get(0).id());
-        
+
         assertEquals(1, processingOrders.size());
         assertEquals(order2.id(), processingOrders.get(0).id());
     }

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import repository.OrderMapRepo;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,20 +13,21 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class OrderMapRepoTest {
 
+    private static final ZonedDateTime FIXED_TIME = ZonedDateTime.parse("2025-01-01T10:00:00+01:00[Europe/Berlin]");
+    
     private OrderMapRepo repo = new OrderMapRepo();
+    private Order newOrder;
 
     @BeforeEach
     void setUp() {
-        repo = new OrderMapRepo();
+        Product appleProduct = new Product("1", "Apfel");
+        newOrder = new Order("1", List.of(appleProduct), OrderStatus.PROCESSING, FIXED_TIME);
     }
 
     @Test
     void getOrders() {
         //GIVEN
-        
 
-        Product product = new Product("1", "Apfel");
-        Order newOrder = new Order("1", List.of(product), OrderStatus.PROCESSING);
         repo.addOrder(newOrder);
 
         //WHEN
@@ -34,7 +36,7 @@ class OrderMapRepoTest {
         //THEN
         List<Order> expected = new ArrayList<>();
         Product product1 = new Product("1", "Apfel");
-        expected.add(new Order("1", List.of(product1), OrderStatus.PROCESSING));
+        expected.add(new Order("1", List.of(product1), OrderStatus.PROCESSING, FIXED_TIME));
 
         assertEquals(actual, expected);
     }
@@ -42,10 +44,6 @@ class OrderMapRepoTest {
     @Test
     void getOrderById() {
         //GIVEN
-        
-
-        Product product = new Product("1", "Apfel");
-        Order newOrder = new Order("1", List.of(product), OrderStatus.PROCESSING);
         repo.addOrder(newOrder);
 
         //WHEN
@@ -53,7 +51,7 @@ class OrderMapRepoTest {
 
         //THEN
         Product product1 = new Product("1", "Apfel");
-        Order expected = new Order("1", List.of(product1), OrderStatus.PROCESSING);
+        Order expected = new Order("1", List.of(product1), OrderStatus.PROCESSING, FIXED_TIME);
 
         assertEquals(actual, expected);
     }
@@ -61,16 +59,13 @@ class OrderMapRepoTest {
     @Test
     void addOrder() {
         //GIVEN
-        
-        Product product = new Product("1", "Apfel");
-        Order newOrder = new Order("1", List.of(product), OrderStatus.PROCESSING);
 
         //WHEN
         Order actual = repo.addOrder(newOrder);
 
         //THEN
         Product product1 = new Product("1", "Apfel");
-        Order expected = new Order("1", List.of(product1), OrderStatus.PROCESSING);
+        Order expected = new Order("1", List.of(product1), OrderStatus.PROCESSING, FIXED_TIME);
         assertEquals(actual, expected);
         assertEquals(repo.getOrderById("1"), expected);
     }
@@ -78,7 +73,7 @@ class OrderMapRepoTest {
     @Test
     void removeOrder() {
         //GIVEN
-        
+
 
         //WHEN
         repo.removeOrder("1");
@@ -90,9 +85,7 @@ class OrderMapRepoTest {
     @Test
     void updateOrder_whenOrderExists_shouldReturnUpdatedOrder() {
         //GIVEN
-        Product product = new Product("1", "Apfel");
-        Order originalOrder = new Order("1", List.of(product), OrderStatus.PROCESSING);
-        repo.addOrder(originalOrder);
+        repo.addOrder(newOrder);
 
         //WHEN
         var result = repo.updateOrder("1", OrderStatus.COMPLETED);
@@ -101,15 +94,13 @@ class OrderMapRepoTest {
         assertTrue(result.isPresent());
         assertEquals(OrderStatus.COMPLETED, result.get().orderStatus());
         assertEquals("1", result.get().id());
-        assertEquals(originalOrder.products(), result.get().products());
+        assertEquals(newOrder.products(), result.get().products());
     }
 
     @Test
     void updateOrder_whenOrderExists_shouldUpdateInRepository() {
-        //GIVEN 
-        Product product = new Product("1", "Apfel");
-        Order originalOrder = new Order("1", List.of(product), OrderStatus.PROCESSING);
-        repo.addOrder(originalOrder);
+        //GIVEN
+        repo.addOrder(newOrder);
 
         //WHEN
         repo.updateOrder("1", OrderStatus.COMPLETED);
@@ -127,5 +118,5 @@ class OrderMapRepoTest {
         //THEN
         assertTrue(result.isEmpty());
     }
- 
+
 }
