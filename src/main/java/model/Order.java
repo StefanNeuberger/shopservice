@@ -1,6 +1,6 @@
-import java.util.List;
+package model;
 
-//so
+import java.util.List;
 
 public record Order(
         String id,
