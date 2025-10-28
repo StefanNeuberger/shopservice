@@ -1,4 +1,5 @@
 import model.Order;
+import model.OrderStatus;
 import model.Product;
 import repository.OrderMapRepo;
 import repository.OrderRepo;
@@ -23,7 +24,7 @@ public class ShopService {
             products.add(productToOrder);
         }
 
-        Order newOrder = new Order(UUID.randomUUID().toString(), products);
+        Order newOrder = new Order(UUID.randomUUID().toString(), products, OrderStatus.PROCESSING);
 
         return orderRepo.addOrder(newOrder);
     }
