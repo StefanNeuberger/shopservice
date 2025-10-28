@@ -1,9 +1,9 @@
 package service;
 
+import enums.OrderStatus;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import model.Order;
-import model.OrderStatus;
 import model.Product;
 import repository.IdGeneratorRepository;
 import repository.OrderRepo;
@@ -54,15 +54,11 @@ public class ShopService {
     }
 
     public Map<OrderStatus, Order> getOldestOrderPerStatus() {
+        List<Order> allOrders = orderRepo.getOrders();
         Map<OrderStatus, Order> oldestOrderPerStatus = new HashMap<>();
         for (OrderStatus orderStatus : OrderStatus.values()) {
             List<Order> ordersOfStatus = getOrdersByOrderStatus(orderStatus);
-            
-            // Find oldest order (earliest orderedAt) or null if none exist
-            Order oldestOrder = ordersOfStatus.stream()
-                    .min(Comparator.comparing(Order::orderedAt))
-                    .orElse(null);
-            
+            Order oldestOrder = ordersOfStatus.stream().sorted(Comparator.comparing(Order::orderedAt)).findFirst().orElse(null);
             oldestOrderPerStatus.put(orderStatus, oldestOrder);
         }
         return oldestOrderPerStatus;

@@ -1,5 +1,5 @@
+import enums.OrderStatus;
 import model.Order;
-import model.OrderStatus;
 import model.Product;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 class OrderListRepoTest {
 
     private static final ZonedDateTime FIXED_TIME = ZonedDateTime.parse("2025-01-01T10:00:00+01:00[Europe/Berlin]");
-    
+
     private Order newOrder;
     private OrderListRepo repo = new OrderListRepo();
 
