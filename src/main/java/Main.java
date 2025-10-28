@@ -17,7 +17,8 @@ public class Main {
         // create new products
         productRepo.addProduct(new Product("1", "Banana"));
         productRepo.addProduct(new Product("2", "Kiwi"));
-        productRepo.addProduct(new Product("3", "Banana"));
+        productRepo.addProduct(new Product("3", "Pear"));
+        productRepo.addProduct(new Product("4", "Orange"));
 
         ShopService shopService = new ShopService(productRepo, orderRepo, idGeneratorRepository);
 
