@@ -130,7 +130,6 @@ class ShopServiceTest {
 
         assertEquals(1, completedOrders.size());
         assertEquals(order1.id(), completedOrders.get(0).id());
-
         assertEquals(1, processingOrders.size());
         assertEquals(order2.id(), processingOrders.get(0).id());
     }
