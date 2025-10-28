@@ -1,5 +1,6 @@
 package service;
 
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import model.Order;
 import model.OrderStatus;
@@ -9,10 +10,10 @@ import repository.OrderRepo;
 import repository.ProductRepo;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @RequiredArgsConstructor
+@Data
 public class ShopService {
 
     private final ProductRepo productRepo;
@@ -50,5 +51,20 @@ public class ShopService {
 
     public List<Order> getOrdersByOrderStatus(OrderStatus orderStatus) {
         return orderRepo.getOrders().stream().filter(o -> o.orderStatus().equals(orderStatus)).toList();
+    }
+
+    public Map<OrderStatus, Order> getOldestOrderPerStatus() {
+        Map<OrderStatus, Order> oldestOrderPerStatus = new HashMap<>();
+        for (OrderStatus orderStatus : OrderStatus.values()) {
+            List<Order> ordersOfStatus = getOrdersByOrderStatus(orderStatus);
+            
+            // Find oldest order (earliest orderedAt) or null if none exist
+            Order oldestOrder = ordersOfStatus.stream()
+                    .min(Comparator.comparing(Order::orderedAt))
+                    .orElse(null);
+            
+            oldestOrderPerStatus.put(orderStatus, oldestOrder);
+        }
+        return oldestOrderPerStatus;
     }
 }
