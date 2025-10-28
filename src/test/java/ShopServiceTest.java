@@ -33,15 +33,11 @@ class ShopServiceTest {
     }
 
     @Test
-    void addOrderTest_whenInvalidProductId_expectNull() {
+    void addOrderTest_whenInvalidProductId_expectNoSuchFieldError() {
         //GIVEN
         List<String> productsIds = List.of("1", "2");
 
-        //WHEN
-        Order actual = shopService.addOrder(productsIds);
-
-        //THEN
-        assertNull(actual);
+        assertThrows(NoSuchFieldError.class, () -> shopService.addOrder(productsIds));
     }
 
     @Test
