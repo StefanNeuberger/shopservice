@@ -67,4 +67,65 @@ class ShopServiceTest {
         assertEquals(0, foundOrders.size());
     }
 
+    @Test
+    void updateOrder_whenOrderExists_shouldReturnUpdatedOrder() {
+        //GIVEN
+        Order order = shopService.addOrder(List.of("1"));
+
+        //WHEN
+        Order updated = shopService.updateOrder(order.id(), OrderStatus.COMPLETED);
+
+        //THEN
+        assertEquals(OrderStatus.COMPLETED, updated.orderStatus());
+        assertEquals(order.id(), updated.id());
+        assertEquals(order.products(), updated.products());
+    }
+
+    @Test
+    void updateOrder_whenOrderExists_shouldUpdateInRepository() {
+        //GIVEN
+        Order order = shopService.addOrder(List.of("1"));
+
+        //WHEN
+        shopService.updateOrder(order.id(), OrderStatus.COMPLETED);
+
+        //THEN
+        List<Order> completedOrders = shopService.getOrdersByOrderStatus(OrderStatus.COMPLETED);
+        assertEquals(1, completedOrders.size());
+        assertEquals(order.id(), completedOrders.get(0).id());
+    }
+
+    @Test
+    void updateOrder_whenOrderNotExists_shouldThrowException() {
+        //GIVEN
+        String nonExistentId = "999";
+
+        //WHEN & THEN
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> shopService.updateOrder(nonExistentId, OrderStatus.COMPLETED)
+        );
+    }
+
+
+    @Test
+    void updateOrder_whenMultipleOrders_shouldUpdateCorrectOrder() {
+        //GIVEN
+        Order order1 = shopService.addOrder(List.of("1"));
+        Order order2 = shopService.addOrder(List.of("1"));
+
+        //WHEN
+        shopService.updateOrder(order1.id(), OrderStatus.COMPLETED);
+
+        //THEN
+        List<Order> completedOrders = shopService.getOrdersByOrderStatus(OrderStatus.COMPLETED);
+        List<Order> processingOrders = shopService.getOrdersByOrderStatus(OrderStatus.PROCESSING);
+        
+        assertEquals(1, completedOrders.size());
+        assertEquals(order1.id(), completedOrders.get(0).id());
+        
+        assertEquals(1, processingOrders.size());
+        assertEquals(order2.id(), processingOrders.get(0).id());
+    }
+
 }
