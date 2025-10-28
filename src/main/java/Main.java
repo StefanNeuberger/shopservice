@@ -1,7 +1,6 @@
 import model.Product;
-import repository.OrderMapRepo;
-import repository.OrderRepo;
-import repository.ProductRepo;
+import repository.*;
+import service.ShopService;
 
 import java.util.List;
 
@@ -10,13 +9,14 @@ public class Main {
 
         ProductRepo productRepo = new ProductRepo();
         OrderRepo orderRepo = new OrderMapRepo();
+        IdGeneratorRepository idGeneratorRepository = new StringIdGeneratorRepo();
 
         // create new products
         productRepo.addProduct(new Product("1", "Banana"));
         productRepo.addProduct(new Product("2", "Kiwi"));
         productRepo.addProduct(new Product("3", "Banana"));
 
-        ShopService shopService = new ShopService(productRepo, orderRepo);
+        ShopService shopService = new ShopService(productRepo, orderRepo, idGeneratorRepository);
 
         // create new orders
         shopService.addOrder(List.of("1", "2", "3"));

@@ -3,9 +3,8 @@ import model.OrderStatus;
 import model.Product;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import repository.OrderMapRepo;
-import repository.OrderRepo;
-import repository.ProductRepo;
+import repository.*;
+import service.ShopService;
 
 import java.util.List;
 
@@ -19,8 +18,9 @@ class ShopServiceTest {
     void setUp() {
         ProductRepo productRepo = new ProductRepo();
         OrderRepo orderRepo = new OrderMapRepo();
+        IdGeneratorRepository idGeneratorRepository = new StringIdGeneratorRepo();
         productRepo.addProduct(new Product("1", "Apfel"));
-        shopService = new ShopService(productRepo, orderRepo);
+        shopService = new ShopService(productRepo, orderRepo, idGeneratorRepository);
 
     }
 
@@ -130,7 +130,6 @@ class ShopServiceTest {
 
         assertEquals(1, completedOrders.size());
         assertEquals(order1.id(), completedOrders.get(0).id());
-
         assertEquals(1, processingOrders.size());
         assertEquals(order2.id(), processingOrders.get(0).id());
     }
