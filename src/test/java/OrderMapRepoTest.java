@@ -1,6 +1,7 @@
 import model.Order;
 import model.OrderStatus;
 import model.Product;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import repository.OrderMapRepo;
 
@@ -11,10 +12,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class OrderMapRepoTest {
 
+    private OrderMapRepo repo = new OrderMapRepo();
+
+    @BeforeEach
+    void setUp() {
+        repo = new OrderMapRepo();
+    }
+
     @Test
     void getOrders() {
         //GIVEN
-        OrderMapRepo repo = new OrderMapRepo();
+        
 
         Product product = new Product("1", "Apfel");
         Order newOrder = new Order("1", List.of(product), OrderStatus.PROCESSING);
@@ -34,7 +42,7 @@ class OrderMapRepoTest {
     @Test
     void getOrderById() {
         //GIVEN
-        OrderMapRepo repo = new OrderMapRepo();
+        
 
         Product product = new Product("1", "Apfel");
         Order newOrder = new Order("1", List.of(product), OrderStatus.PROCESSING);
@@ -53,7 +61,7 @@ class OrderMapRepoTest {
     @Test
     void addOrder() {
         //GIVEN
-        OrderMapRepo repo = new OrderMapRepo();
+        
         Product product = new Product("1", "Apfel");
         Order newOrder = new Order("1", List.of(product), OrderStatus.PROCESSING);
 
@@ -70,7 +78,7 @@ class OrderMapRepoTest {
     @Test
     void removeOrder() {
         //GIVEN
-        OrderMapRepo repo = new OrderMapRepo();
+        
 
         //WHEN
         repo.removeOrder("1");
@@ -78,4 +86,46 @@ class OrderMapRepoTest {
         //THEN
         assertNull(repo.getOrderById("1"));
     }
+
+    @Test
+    void updateOrder_whenOrderExists_shouldReturnUpdatedOrder() {
+        //GIVEN
+        Product product = new Product("1", "Apfel");
+        Order originalOrder = new Order("1", List.of(product), OrderStatus.PROCESSING);
+        repo.addOrder(originalOrder);
+
+        //WHEN
+        var result = repo.updateOrder("1", OrderStatus.COMPLETED);
+
+        //THEN
+        assertTrue(result.isPresent());
+        assertEquals(OrderStatus.COMPLETED, result.get().orderStatus());
+        assertEquals("1", result.get().id());
+        assertEquals(originalOrder.products(), result.get().products());
+    }
+
+    @Test
+    void updateOrder_whenOrderExists_shouldUpdateInRepository() {
+        //GIVEN 
+        Product product = new Product("1", "Apfel");
+        Order originalOrder = new Order("1", List.of(product), OrderStatus.PROCESSING);
+        repo.addOrder(originalOrder);
+
+        //WHEN
+        repo.updateOrder("1", OrderStatus.COMPLETED);
+
+        //THEN
+        Order retrievedOrder = repo.getOrderById("1");
+        assertEquals(OrderStatus.COMPLETED, retrievedOrder.orderStatus());
+    }
+
+    @Test
+    void updateOrder_whenOrderNotExists_shouldReturnEmpty() {
+        //WHEN
+        var result = repo.updateOrder("999", OrderStatus.COMPLETED);
+
+        //THEN
+        assertTrue(result.isEmpty());
+    }
+ 
 }
