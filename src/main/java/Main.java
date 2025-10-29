@@ -13,7 +13,7 @@ public class Main {
         OrderRepo orderRepo = new OrderMapRepo();
         IdGeneratorRepository idGeneratorRepository = new StringIdGeneratorRepo();
 
-        // create new products
+        // create new products.
         productRepo.addProduct(new Product("1", "Banana"));
         productRepo.addProduct(new Product("2", "Kiwi"));
         productRepo.addProduct(new Product("3", "Pear"));
