@@ -1,5 +1,6 @@
 package service;
 
+import enums.Commands;
 import enums.OrderStatus;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,9 @@ import repository.IdGeneratorRepository;
 import repository.OrderRepo;
 import repository.ProductRepo;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.util.*;
 
@@ -62,5 +66,100 @@ public class ShopService {
             oldestOrderPerStatus.put(orderStatus, oldestOrder);
         }
         return oldestOrderPerStatus;
+    }
+
+    public void processCommandsFromFile() {
+        Path filePath = Path.of("src/main/resources/transactions.txt");
+        Map<String, Order> ordersByName = new HashMap<>();
+
+        try {
+            List<String> lines = Files.readAllLines(filePath);
+            for (String line : lines) {
+                try {
+                    processLine(line, ordersByName);
+                } catch (Exception e) {
+                    System.err.println("Error processing line: " + line);
+                    System.err.println("  Error: " + e.getMessage());
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Could not read file: " + e.getMessage());
+        }
+    }
+
+    private void processLine(String line, Map<String, Order> ordersByName) {
+        String[] parts = line.split(" ");
+
+        // Early validation
+        if (parts.length == 0) return; // Empty line
+
+        String commandStr = parts[0];
+
+        if (!Commands.isValid(commandStr)) {
+            throw new IllegalArgumentException("Invalid command: " + commandStr);
+        }
+
+        // Convert to enum for type-safe switching
+        Commands command = Commands.fromString(commandStr);
+
+        // Use enum in switch - type-safe and no magic strings!
+        switch (command) {
+            case ADD_ORDER -> handleAddOrder(parts, ordersByName);
+            case SET_STATUS -> handleSetStatus(parts, ordersByName);
+            case PRINT_ORDERS -> handlePrintOrders(ordersByName);
+        }
+    }
+
+    private void handleAddOrder(String[] parts, Map<String, Order> ordersByName) {
+        // Format: addOrder A 1 2 3
+        if (parts.length < 3) {
+            throw new IllegalArgumentException("addOrder requires at least: orderName and one product");
+        }
+
+        // get orderName
+        String orderName = parts[1];
+
+        // get productIds
+        List<String> productIds = List.of(parts).subList(2, parts.length);
+
+        // create order
+        Order order = addOrder(productIds);
+
+        // save order to map
+        ordersByName.put(orderName, order);
+        System.out.println("Created order " + orderName + " with " + order.id());
+    }
+
+    private void handleSetStatus(String[] parts, Map<String, Order> ordersByName) {
+        // Format: setStatus A COMPLETED
+        if (parts.length < 3) {
+            throw new IllegalArgumentException("setStatus requires: orderName and status");
+        }
+
+        String orderName = parts[1];
+        String statusStr = parts[2];
+
+        // Check if status is valid
+        if (!OrderStatus.isValid(statusStr)) {
+            throw new IllegalArgumentException("Invalid status: " + statusStr);
+        }
+
+        Order order = ordersByName.get(orderName);
+        if (order == null) {
+            throw new NoSuchFieldError("Order with name: " + orderName + " not found!");
+        }
+
+        OrderStatus status = OrderStatus.valueOf(statusStr);
+
+        // Update order
+        updateOrder(order.id(), status);
+        System.out.println("Updated order " + orderName + " to status: " + statusStr);
+    }
+
+    private void handlePrintOrders(Map<String, Order> ordersByName) {
+        System.out.println("\nAll orders:");
+        ordersByName.forEach((name, order) ->
+                System.out.println(name + ": " + order)
+        );
     }
 }
