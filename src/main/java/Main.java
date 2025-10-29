@@ -1,11 +1,10 @@
+import enums.OrderStatus;
 import model.Order;
-import model.OrderStatus;
 import model.Product;
 import repository.*;
 import service.ShopService;
 
 import java.util.List;
-import java.util.Map;
 
 public class Main {
     public static void main(String[] args) {
@@ -14,10 +13,11 @@ public class Main {
         OrderRepo orderRepo = new OrderMapRepo();
         IdGeneratorRepository idGeneratorRepository = new StringIdGeneratorRepo();
 
-        // create new products
+        // create new products.
         productRepo.addProduct(new Product("1", "Banana"));
         productRepo.addProduct(new Product("2", "Kiwi"));
-        productRepo.addProduct(new Product("3", "Banana"));
+        productRepo.addProduct(new Product("3", "Pear"));
+        productRepo.addProduct(new Product("4", "Orange"));
 
         ShopService shopService = new ShopService(productRepo, orderRepo, idGeneratorRepository);
 
@@ -35,12 +35,13 @@ public class Main {
         shopService.updateOrder(order3.id(), OrderStatus.COMPLETED);
         shopService.updateOrder(order4.id(), OrderStatus.COMPLETED);
 
-        Map<OrderStatus, Order> oldestOrderPerStatus = shopService.getOldestOrderPerStatus();
-        System.out.println();
-        System.out.println(oldestOrderPerStatus);
-
-
-        System.out.println();
-        System.out.println(shopService.getOrders());
+        // Read from file
+        try {
+            shopService.processCommandsFromFile();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
+
+
 }

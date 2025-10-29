@@ -1,13 +1,13 @@
 package repository;
 
+import enums.OrderStatus;
 import model.Order;
-import model.OrderStatus;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class OrderListRepo implements OrderRepo{
+public class OrderListRepo implements OrderRepo {
     private List<Order> orders = new ArrayList<>();
 
     public List<Order> getOrders() {

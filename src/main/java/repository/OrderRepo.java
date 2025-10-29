@@ -1,7 +1,7 @@
 package repository;
 
+import enums.OrderStatus;
 import model.Order;
-import model.OrderStatus;
 
 import java.util.List;
 import java.util.Optional;

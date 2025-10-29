@@ -1,5 +1,5 @@
+import enums.OrderStatus;
 import model.Order;
-import model.OrderStatus;
 import model.Product;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

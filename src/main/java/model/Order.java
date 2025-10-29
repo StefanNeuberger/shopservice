@@ -1,5 +1,6 @@
 package model;
 
+import enums.OrderStatus;
 import lombok.With;
 
 import java.time.ZonedDateTime;
