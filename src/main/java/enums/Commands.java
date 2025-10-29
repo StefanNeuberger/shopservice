@@ -27,4 +27,10 @@ public enum Commands {
         return VALID_VALUES.contains(command);
     }
 
+    public static Commands fromString(String command) {
+        return Arrays.stream(Commands.values())
+                .filter(c -> c.value.equals(command))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Unknown command: " + command));
+    }
 }

@@ -74,18 +74,20 @@ public class Main {
         // Early validation
         if (parts.length == 0) return; // Empty line
 
-        String command = parts[0];
+        String commandStr = parts[0];
 
-        if (!Commands.isValid(command)) {
-            throw new IllegalArgumentException("Invalid command: " + command);
+        if (!Commands.isValid(commandStr)) {
+            throw new IllegalArgumentException("Invalid command: " + commandStr);
         }
 
-        // Use switch for better performance and readability
+        // Convert to enum for type-safe switching
+        Commands command = Commands.fromString(commandStr);
+
+        // Use enum in switch - type-safe and no magic strings!
         switch (command) {
-            case "addOrder" -> handleAddOrder(parts, shopService, ordersByName);
-            case "setStatus" -> handleSetStatus(parts, shopService, ordersByName);
-            case "printOrder" -> handlePrintOrders(ordersByName);
-            default -> throw new IllegalArgumentException("Unknown command: " + command);
+            case ADD_ORDER -> handleAddOrder(parts, shopService, ordersByName);
+            case SET_STATUS -> handleSetStatus(parts, shopService, ordersByName);
+            case PRINT_ORDERS -> handlePrintOrders(ordersByName);
         }
     }
 
