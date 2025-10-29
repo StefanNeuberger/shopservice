@@ -58,7 +58,6 @@ public class ShopService {
     }
 
     public Map<OrderStatus, Order> getOldestOrderPerStatus() {
-        List<Order> allOrders = orderRepo.getOrders();
         Map<OrderStatus, Order> oldestOrderPerStatus = new HashMap<>();
         for (OrderStatus orderStatus : OrderStatus.values()) {
             List<Order> ordersOfStatus = getOrdersByOrderStatus(orderStatus);
@@ -68,8 +67,8 @@ public class ShopService {
         return oldestOrderPerStatus;
     }
 
-    public void processCommandsFromFile() {
-        Path filePath = Path.of("src/main/resources/transactions.txt");
+    public void processCommandsFromFile(Path filePath) throws IOException {
+
         Map<String, Order> ordersByName = new HashMap<>();
 
         try {
@@ -77,13 +76,15 @@ public class ShopService {
             for (String line : lines) {
                 try {
                     processLine(line, ordersByName);
-                } catch (Exception e) {
+                } catch (Throwable e) {
+                    // Catch both Exception and Error (like NoSuchFieldError)
                     System.err.println("Error processing line: " + line);
                     System.err.println("  Error: " + e.getMessage());
                 }
             }
         } catch (IOException e) {
             System.err.println("Could not read file: " + e.getMessage());
+            throw new IOException(e);
         }
     }
 

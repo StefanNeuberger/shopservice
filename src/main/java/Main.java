@@ -4,6 +4,7 @@ import model.Product;
 import repository.*;
 import service.ShopService;
 
+import java.nio.file.Path;
 import java.util.List;
 
 public class Main {
@@ -37,7 +38,8 @@ public class Main {
 
         // Read from file
         try {
-            shopService.processCommandsFromFile();
+            Path filePath = Path.of("src/main/resources/transactions.txt");
+            shopService.processCommandsFromFile(filePath);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
